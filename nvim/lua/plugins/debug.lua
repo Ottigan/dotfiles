@@ -3,7 +3,7 @@ return {
     dependencies = {
         "rcarriga/nvim-dap-ui",
         "nvim-neotest/nvim-nio",
-        "mason-org/mason.nvim",
+        { "mason-org/mason.nvim", opts = {} },
         "jay-babu/mason-nvim-dap.nvim",
         "leoluz/nvim-dap-go",
         -- Inline variable values as virtual text while stepping
@@ -80,6 +80,13 @@ return {
                 require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
             end,
             desc = "Set conditional [B]reakpoint",
+        },
+        {
+            "<leader>dc",
+            function()
+                require("dap").clear_breakpoints()
+            end,
+            desc = "[C]lear",
         },
         {
             "<leader>dh",

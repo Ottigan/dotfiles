@@ -223,6 +223,12 @@ return { -- Collection of various small independent plugins/modules
 
                 vim.keymap.set("n", "g.", toggle_dotfiles, { buffer = buf_id, desc = "Toggle hidden files" })
 
+                -- Close the whole explorer at once. Without this the global <Esc> map takes over
+                -- and closes a single floating window per press, one directory column at a time.
+                vim.keymap.set("n", "<Esc>", function()
+                    MiniFiles.close()
+                end, { buffer = buf_id, desc = "Close" })
+
                 map_split(buf_id, "<C-s>", "horizontal", true)
                 map_split(buf_id, "<C-v>", "vertical", true)
             end,
