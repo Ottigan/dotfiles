@@ -60,6 +60,7 @@ return { -- Collection of various small independent plugins/modules
                 { mode = "n", keys = "<Leader>q", desc = "+Quit/Session" },
                 { mode = "n", keys = "<Leader>x", desc = "+Diagnostic" },
                 { mode = "n", keys = "<Leader>l", desc = "+Lists" },
+                { mode = "n", keys = "<Leader>m", desc = "+Markdown" },
 
                 miniclue.gen_clues.square_brackets(),
                 miniclue.gen_clues.builtin_completion(),
