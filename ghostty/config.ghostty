@@ -17,15 +17,14 @@ unfocused-split-opacity = 0.5
 window-padding-x = 4
 window-padding-y = 4
 window-padding-balance = true
-window-decoration = none
+window-decoration = true
 window-save-state = always
 initial-window = true
 maximize = true
 
 # ── Font ──────────────────────────────────────────────
-font-family = JetBrainsMono Nerd Font
+font-family = JetBrainsMono Nerd Font Mono
 adjust-cell-width = -5%
-adjust-cell-height = 20%
 adjust-underline-position = 6
 adjust-underline-thickness = 40%
 # ==> != ++ := ->> !== -->
@@ -34,7 +33,7 @@ font-thicken = false
 font-size = 10
 
 # ── Cursor ────────────────────────────────────────────
-cursor-style = block
+cursor-style = bar
 cursor-style-blink = true
 
 # ── Mouse ─────────────────────────────────────────────
@@ -49,9 +48,7 @@ macos-non-native-fullscreen = true
 macos-window-buttons = hidden
 macos-titlebar-style = tabs
 macos-window-shadow = true
-macos-window-shadow = true
 macos-option-as-alt = true
-mouse-hide-while-typing = true
 quit-after-last-window-closed = true
 
 # ── Keybinds ───────────────────────────────────

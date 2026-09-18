@@ -1,20 +1,20 @@
-new_tab
-layout splits
-cd /Users/janismalcans/Documents/js-dealermodules
-launch --hold zsh -ic 'v .;zsh'
-focus
-
-new_tab
-layout splits
-cd /Users/janismalcans/Documents/js-dealermodules
-launch --hold zsh -ic "lg; zsh"
-focus
-
-new_tab
+new_tab Editor
 layout splits
 cd ~/Documents/js-dealermodules
-launch --hold --location=hsplit zsh -ic "dm-hh-storybook; zsh"
-launch --cwd ~/Documents/js-dealermodules/src/filthyrich
+launch zsh -ic 'v .; exec zsh'
 focus
+
+new_tab Lazygit
+layout splits
+cd ~/Documents/js-dealermodules
+launch zsh -ic 'lg; exec zsh'
+focus
+
+new_tab Shell
+layout splits
+cd ~/Documents/js-dealermodules
+launch --var pane=shell --cwd ~/Documents/js-dealermodules/src/filthyrich
+launch --location=vsplit zsh -ic 'dm-hh-storybook; exec zsh'
+focus_matching_window var:pane=shell
 
 focus_tab 0
