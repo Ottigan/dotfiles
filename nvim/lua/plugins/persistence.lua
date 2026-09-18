@@ -94,6 +94,12 @@ return {
         -- 2. `nvim {dir}/file` - open a file in a directory
         -- 3. `nvim` - open without arguments
         vim.schedule(function()
+            -- 4. `nvim -` as kitty's scrollback_pager - no session handling
+            if vim.g.kitty_scrollback then
+                persistence.stop()
+                return
+            end
+
             local first_arg = vim.fn.argv()[1]
 
             if not first_arg then

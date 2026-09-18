@@ -1,3 +1,5 @@
+os_window_state maximized
+
 new_tab Editor
 layout splits
 cd ~/Documents/js-clients
