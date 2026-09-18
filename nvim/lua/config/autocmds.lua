@@ -106,3 +106,25 @@ vim.api.nvim_create_autocmd("User", {
         end
     end,
 })
+
+-- Follow Obsidian wikilinks in markdown. Buffer-local so `gf` keeps its
+-- builtin meaning everywhere else, and falls through to it when the cursor
+-- isn't on a `[[link]]` or the file isn't inside a vault.
+vim.api.nvim_create_autocmd("FileType", {
+    group = group,
+    pattern = "markdown",
+    callback = function(ev)
+        local wikilink = require("config.wikilink")
+
+        vim.keymap.set("n", "gf", function()
+            if not wikilink.follow() then
+                vim.cmd("normal! gf")
+            end
+        end, { buffer = ev.buf, desc = "Follow wikilink or file under cursor" })
+
+        vim.keymap.set("n", "<cr>", wikilink.follow, {
+            buffer = ev.buf,
+            desc = "Follow wikilink under cursor",
+        })
+    end,
+})
