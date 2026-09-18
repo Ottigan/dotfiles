@@ -1,52 +1,27 @@
-# ~/.ripgreprc
-# Case sensitivity
---smart-case          # Use case-insensitive if pattern is all lowercase
---ignore-case         # Force case-insensitive (comment out smart-case if using this)
-
-# Output formatting
---colors "match:fg:green"
---colors "line:fg:yellow"
---colors "path:fg:cyan"
---colors "line:fg:bold"
---column              # Show column numbers
---heading             # Show file name as heading before matches
---line-number         # Show line numbers
---max-columns 150     # Don't wrap lines longer than 150 chars
---max-columns-preview # Show preview even if truncated
-
-# Context control
---context 2           # Show 2 lines before/after each match
---context-separator "---"
-
-# Performance & scope
---max-filesize 50M    # Skip files larger than 50MB
---mmap                # Use memory mapping for faster searching (Linux/BSD)
---no-ignore-messages  # Don't print error messages about ignored files
---follow              # Follow symlinks
-
-# Smart defaults
---hidden              # Search hidden files (use -u to override)
---no-ignore           # Don't respect .gitignore (use -u properly)
---type-add 'config:*.{yml,yaml,toml,json,ini,conf,cfg}'
---type-add 'script:*.{sh,bash,zsh,fish,ps1,py,rb,pl}'
---type-add 'doc:*.{md,org,rst,txt,tex,adoc}'
-
-# File types to prioritize (use: rg -t rust)
---type-set 'rust:*.rs'
---type-set 'python:*.py,*.pyi'
---type-set 'javascript:*.js,*.jsx,*.mjs'
---type-set 'typescript:*.ts,*.tsx'
-
-# Exclusions (negations)
---glob '!*.min.js'
---glob '!*.min.css'
---glob '!*.map'
---glob '!*.lock'
---glob '!*.log'
---glob '!*.tmp'
---glob '!*.bak'
-
-# Less common but useful
---regex-size-limit 10M  # Prevent catastrophic backtracking
---dfa-size-limit 10M    # DFA memory limit
---quiet                 # Don't output anything (useful for exit codes only)
+--smart-case
+--colors=match:fg:green
+--colors=line:fg:yellow
+--colors=line:style:bold
+--colors=path:fg:cyan
+--column
+--heading
+--line-number
+--max-columns=150
+--max-columns-preview
+--context-separator=---
+--max-filesize=50M
+--mmap
+--no-ignore-messages
+--follow
+--hidden
+--type-add=config:*.{yml,yaml,toml,json,ini,conf,cfg}
+--type-add=script:*.{sh,bash,zsh,fish,ps1,py,rb,pl}
+--type-add=doc:*.{md,org,rst,txt,tex,adoc}
+--glob=!.git/
+--glob=!*.min.js
+--glob=!*.min.css
+--glob=!*.map
+--glob=!*.lock
+--glob=!*.log
+--glob=!*.tmp
+--glob=!*.bak

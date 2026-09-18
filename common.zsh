@@ -31,6 +31,9 @@ export SUDO_PROMPT="$(tput setaf 2 bold)Password: $(tput sgr0)"
 export FZF_DEFAULT_COMMAND="fd --type file"
 export FZF_DEFAULT_OPTS="--height 40% --layout reverse --border --preview 'bat --color=always --line-range :500 {}'"
 
+# Ripgrep configuration.
+export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.

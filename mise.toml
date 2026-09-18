@@ -82,8 +82,8 @@ run = 'ln -sfn "$MISE_CONFIG_ROOT/.gitconfig" "$HOME/.gitconfig"'
 
 [tasks.ripgrep]
 hide = true
-run = 'ln -sfn "$MISE_CONFIG_ROOT/.ripgrep" "$HOME/.ripgrep"'
+run = 'ln -sfn "$MISE_CONFIG_ROOT/.ripgreprc" "$HOME/.ripgreprc"'
 
 [tasks.kitty]
 hide = true
-run = 'ln -sfn "$MISE_CONFIG_ROOT/kitty" "$HOME/.config"'
+run = 'ln -sfn "$MISE_CONFIG_ROOT/kitty" "$HOME/.config/kitty"'
