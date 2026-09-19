@@ -83,15 +83,9 @@ end
 local function setup_servers()
     local servers = {
         tsc = {
-            cmd = { "tsgo", "--lsp", "--stdio" },
+            cmd = { "tsc", "--lsp", "--stdio" },
             filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
-            root_dir = function(bufnr, on_dir)
-                local root = vim.fs.root(bufnr, { "tsconfig.json", "jsconfig.json", "package.json", ".git" })
-
-                if root then
-                    on_dir(root)
-                end
-            end,
+            root_markers = { "tsconfig.json", "jsconfig.json", "package.json", ".git" },
         },
         eslint = {
             cmd = { "vscode-eslint-language-server", "--stdio" },
@@ -162,6 +156,40 @@ local function setup_servers()
                         parameterNames = true,
                         rangeVariableTypes = true,
                     },
+                },
+            },
+        },
+        rust_analyzer = {
+            cmd = { "rust-analyzer" },
+            filetypes = { "rust" },
+            root_markers = { "Cargo.toml", "rust-project.json", ".git" },
+            before_init = function(_, config)
+                -- rust-analyzer only ever looks for a Cargo.toml or a
+                -- rust-project.json under the workspace root, and gives up with
+                -- "failed to find any projects" on a .rs file that belongs to
+                -- neither. Naming the file as a linked project is what makes it
+                -- analyse a standalone script; linkedProjects takes a plain .rs
+                -- path for exactly this case, and has to arrive as a setting
+                -- rather than an init option to be picked up. Cargo cannot check
+                -- a file outside a project, so that pass goes with it.
+                if not config.root_dir then
+                    local settings = config.settings["rust-analyzer"]
+                    settings.linkedProjects = { vim.api.nvim_buf_get_name(0) }
+                    settings.checkOnSave = false
+                end
+            end,
+            settings = {
+                ["rust-analyzer"] = {
+                    cargo = { allFeatures = true },
+                    check = { command = "clippy" },
+                    inlayHints = {
+                        bindingModeHints = { enable = true },
+                        closureReturnTypeHints = { enable = "always" },
+                        lifetimeElisionHints = { enable = "always", useParameterNames = true },
+                        parameterHints = { enable = true },
+                        typeHints = { enable = true },
+                    },
+                    procMacro = { enable = true },
                 },
             },
         },

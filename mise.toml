@@ -32,7 +32,12 @@ run = '''
   mise use -g cargo:taplo-cli@latest
   mise use -g cargo:stylua@latest
   mise use -g go:github.com/a-h/templ/cmd/templ@latest
+  mise use -g go:golang.org/x/tools/gopls@latest
   mise use -g go:mvdan.cc/sh/v3/cmd/shfmt@latest
+
+  # rust-analyzer ships as a rustup component, so it tracks the toolchain
+  # installed above rather than being a mise tool of its own.
+  rustup component add rust-analyzer
 
   if [ "$(uname -s)" = "Linux" ]; then
     sudo pacman -S --noconfirm --needed zsh
