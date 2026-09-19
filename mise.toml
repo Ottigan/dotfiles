@@ -25,7 +25,7 @@ run = '''
 
   mise use -g npm:vscode-langservers-extracted@latest
   mise use -g npm:@tailwindcss/language-server@latest
-  mise use -g npm:@typescript/native-preview@latest
+  mise use -g npm:typescript@latest
   mise use -g npm:@fsouza/prettierd@latest
   mise use -g npm:eslint_d@latest
   mise use -g npm:stylelint@latest
