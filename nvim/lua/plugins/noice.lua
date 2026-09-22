@@ -78,6 +78,21 @@ return {
         },
         routes = {
             {
+                -- Shutting a language server down on idle (see lsp.lua) makes
+                -- `tsc` exit non-zero, which Neovim reports as a crash. Drop only
+                -- the warnings that land right after a deliberate stop, so a
+                -- server that really does fall over is still reported.
+                opts = { skip = true },
+                filter = {
+                    event = "notify",
+                    find = "quit with exit code",
+                    cond = function()
+                        local at = vim.g.lsp_idle_stopped_at
+                        return at ~= nil and (vim.uv.now() - at) < 1000
+                    end,
+                },
+            },
+            {
                 opts = { skip = true },
                 filter = {
                     any = {
@@ -85,11 +100,6 @@ return {
                         { event = "msg_show", find = "fewer lines" },
                         { event = "msg_show", find = "more lines" },
                         { event = "msg_show", kind = "search_count" },
-                        -- Benign race in repos with `core.fsmonitor` enabled: concurrent
-                        -- git subprocesses (mini.git fires several per buffer) race to
-                        -- start the fsmonitor daemon, the loser exits 0 but still writes
-                        -- this to stderr, which mini.git surfaces as a WARN regardless.
-                        { event = "notify", find = "fsmonitor--daemon is already running" },
                     },
                 },
             },

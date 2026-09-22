@@ -4,7 +4,6 @@ return { -- Collection of various small independent plugins/modules
     priority = 1000,
     config = function()
         local miniclue = require("mini.clue")
-        require("mini.git").setup()
 
         miniclue.setup({
             -- Clue window settings

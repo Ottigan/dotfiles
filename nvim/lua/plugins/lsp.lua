@@ -80,6 +80,36 @@ local function setup_lsp_keymaps()
     end
 end
 
+-- The grace period before closing
+local IDLE_SHUTDOWN_MS = 60 * 1000
+
+local function setup_idle_shutdown()
+    vim.api.nvim_create_autocmd("LspDetach", {
+        group = vim.api.nvim_create_augroup("LspIdleShutdown", { clear = true }),
+        callback = function(ev)
+            local client_id = ev.data.client_id
+
+            -- The buffer is still listed in `attached_buffers` while LspDetach
+            -- runs, so the check has to happen later regardless of the delay.
+            vim.defer_fn(function()
+                local client = vim.lsp.get_client_by_id(client_id)
+
+                if not client or client:is_stopped() then
+                    return
+                end
+
+                if next(client.attached_buffers) == nil then
+                    -- `tsc` exits non-zero when asked to shut down, which Neovim
+                    -- reports as a crashed client. Record the moment so noice can
+                    -- drop that one warning without also hiding a real crash.
+                    vim.g.lsp_idle_stopped_at = vim.uv.now()
+                    client:stop()
+                end
+            end, IDLE_SHUTDOWN_MS)
+        end,
+    })
+end
+
 local function setup_servers()
     local servers = {
         tsc = {
@@ -245,7 +275,24 @@ local function setup_servers()
                 config.settings.json.schemas = require("schemastore").json.schemas()
             end,
         },
-        tailwindcss = {},
+        tailwindcss = {
+            root_dir = function(bufnr, on_dir)
+                local root_files = {
+                    "tailwind.config.js",
+                    "tailwind.config.cjs",
+                    "tailwind.config.mjs",
+                    "tailwind.config.ts",
+                }
+
+                local fname = vim.api.nvim_buf_get_name(bufnr)
+                root_files = require("lspconfig.util").insert_package_json(root_files, "tailwindcss", fname)
+
+                local found = vim.fs.find(root_files, { path = fname, upward = true })[1]
+                if found then
+                    on_dir(vim.fs.dirname(found))
+                end
+            end,
+        },
         taplo = {},
         templ = {},
         zls = {},
@@ -267,6 +314,7 @@ return {
         setup_filetypes()
         setup_diagnostics()
         setup_lsp_keymaps()
+        setup_idle_shutdown()
         setup_servers()
     end,
 }

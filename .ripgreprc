@@ -12,7 +12,6 @@
 --max-filesize=50M
 --mmap
 --no-ignore-messages
---follow
 --hidden
 --type-add=config:*.{yml,yaml,toml,json,ini,conf,cfg}
 --type-add=script:*.{sh,bash,zsh,fish,ps1,py,rb,pl}

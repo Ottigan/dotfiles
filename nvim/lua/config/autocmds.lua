@@ -76,34 +76,45 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
--- Automatically close buffers that no longer exist on disk
+-- Automatically close buffers that no longer exist on disk after a branch
+-- change. gitsigns already tracks the head from a single `.git/HEAD` watcher
+-- and publishes it as `vim.g.gitsigns_head`, so this costs no git subprocesses
+-- of its own -- unlike mini.git, which ran a `status --untracked-files=all
+-- --ignored` per buffer to derive the same thing.
+--
+-- `GitSignsUpdate` doubles as a per-buffer hunk-refresh notification; only the
+-- head-change firings come without `data.buffer`, so the rest are dropped
+-- before any work happens. The head is read on the next tick because the
+-- initial firing happens just *before* gitsigns assigns the global.
 vim.api.nvim_create_autocmd("User", {
-    pattern = "MiniGitUpdated",
+    group = group,
+    pattern = "GitSignsUpdate",
     callback = function(ev)
-        local buffers = require("config.buffers")
-
-        -- Check if a branch change actually occurred
-        local new_branch = vim.b[ev.buf].minigit_summary
-
-        if not new_branch then
+        if ev.data and ev.data.buffer then
             return
         end
 
-        if new_branch.head_name == vim.g.last_known_branch then
-            return
-        end
+        vim.schedule(function()
+            local head = vim.g.gitsigns_head
 
-        vim.g.last_known_branch = new_branch.head_name
-
-        for _, bufnr in ipairs(buffers.list()) do
-            local bufname = vim.api.nvim_buf_get_name(bufnr)
-            local path = vim.fn.fnamemodify(bufname, ":p")
-
-            -- Delete buffer if it no longer exists on disk (e.g. due to git checkout)
-            if not path or not vim.uv.fs_stat(path) then
-                buffers.delete(bufnr)
+            if not head or head == vim.g.last_known_branch then
+                return
             end
-        end
+
+            vim.g.last_known_branch = head
+
+            local buffers = require("config.buffers")
+
+            for _, bufnr in ipairs(buffers.list()) do
+                local bufname = vim.api.nvim_buf_get_name(bufnr)
+                local path = vim.fn.fnamemodify(bufname, ":p")
+
+                -- Delete buffer if it no longer exists on disk (e.g. due to git checkout)
+                if not path or not vim.uv.fs_stat(path) then
+                    buffers.delete(bufnr)
+                end
+            end
+        end)
     end,
 })
 
