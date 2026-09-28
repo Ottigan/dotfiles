@@ -22,6 +22,7 @@ run = '''
   mise use -g git-lfs@latest
   mise use -g tlrc@latest
   mise use -g yazi@latest
+  mise use -g starship@latest
 
   mise use -g npm:vscode-langservers-extracted@latest
   mise use -g npm:@tailwindcss/language-server@latest
@@ -44,11 +45,15 @@ run = '''
     sudo pacman -S --noconfirm --needed ghostty
     sudo pacman -S --noconfirm --needed lua-language-server
     sudo pacman -S --noconfirm --needed zls
+
+    transient_prompt="$HOME/.local/share/zsh-transient-prompt"
+    [ -d "$transient_prompt" ] || git clone https://github.com/olets/zsh-transient-prompt "$transient_prompt"
   elif [ "$(uname -s)" = "Darwin" ]; then
     brew install zsh
     brew install --cask ghostty
     brew install lua-language-server
     brew install zls
+    brew install olets/tap/zsh-transient-prompt
   fi
 
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -56,7 +61,7 @@ run = '''
 
 [tasks.link]
 description = "Link all configs"
-depends = ["lazygit", "ghostty", "fd", "git", "ripgrep", "nvim", "kitty"]
+depends = ["lazygit", "ghostty", "fd", "git", "ripgrep", "nvim", "kitty", "starship"]
 
 [tasks.nvim]
 hide = true
@@ -92,3 +97,7 @@ run = 'ln -sfn "$MISE_CONFIG_ROOT/.ripgreprc" "$HOME/.ripgreprc"'
 [tasks.kitty]
 hide = true
 run = 'ln -sfn "$MISE_CONFIG_ROOT/kitty" "$HOME/.config/kitty"'
+
+[tasks.starship]
+hide = true
+run = 'mkdir -p "$HOME/.config" && ln -sfn "$MISE_CONFIG_ROOT/starship.toml" "$HOME/.config/starship.toml"'

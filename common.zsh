@@ -34,13 +34,6 @@ export FZF_DEFAULT_OPTS="--height 40% --layout reverse --border --preview 'bat -
 # Ripgrep configuration.
 export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 bindkey "^[[Z" autosuggest-accept # shift + tab  | autosuggest
 bindkey "^[[A" history-beginning-search-backward
 bindkey "^P" history-beginning-search-backward
@@ -200,6 +193,17 @@ runx() {
   ((failed == 0))
 }
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-source ~/powerlevel10k/powerlevel10k.zsh-theme
+# Starship prompt, config lives in ~/.config/starship.toml.
+eval "$(starship init zsh)"
+
+# Clear previous prompts once a command is submitted (must load after starship).
+TRANSIENT_PROMPT_TRANSIENT_PROMPT=''
+for transient_prompt in \
+  /opt/homebrew/share/zsh-transient-prompt/transient-prompt.zsh-theme \
+  "$XDG_DATA_HOME/zsh-transient-prompt/transient-prompt.zsh-theme"; do
+  if [[ -r $transient_prompt ]]; then
+    source "$transient_prompt"
+    break
+  fi
+done
+unset transient_prompt
