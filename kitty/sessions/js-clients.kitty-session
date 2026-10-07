@@ -16,8 +16,8 @@ new_tab Shell
 layout splits
 cd ~/Documents/js-clients/packages/games-evo/evo-filthyrich
 launch --var pane=shell
-launch --location=vsplit
-launch --location=hsplit zsh -ic 'yarn start; exec zsh'
+launch --location=vsplit zsh -ic 'yarn start; exec zsh'
+launch --location=hsplit --cwd=~/Documents/js-clients
 focus_matching_window var:pane=shell
 
 focus_tab 0

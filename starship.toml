@@ -8,7 +8,25 @@ add_newline = false
 scan_timeout = 30
 
 # Timeout for commands executed by starship (in milliseconds).
-command_timeout = 500
+command_timeout = 1000
+
+# Prompt
+format = """
+$username\
+$hostname\
+$localip\
+$shlvl\
+$directory\
+$git_branch\
+$git_commit\
+$git_state\
+$git_status\
+$battery\
+$time\
+$status\
+$os\
+$shell\
+$character"""
 
 [character]
 success_symbol = '[❯](bold green)'
