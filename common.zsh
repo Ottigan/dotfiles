@@ -21,6 +21,7 @@ export PATH="$HOME/.local/bin:$PATH" # Local scripts
 export PATH="$HOME/go/bin:$PATH"     # Go binaries.
 
 # Use neovim as the default editor.
+export SUDO_EDITOR=nvim
 export EDITOR=$(which nvim)
 export VISUAL="$EDITOR"
 
@@ -192,6 +193,16 @@ runx() {
 
   ((failed == 0))
 }
+
+if command -v pbcopy >/dev/null; then
+  alias copy='pbcopy'
+elif command -v wl-copy >/dev/null; then
+  alias copy='wl-copy'
+elif command -v xclip >/dev/null; then
+  alias copy='xclip -selection clipboard'
+elif command -v xsel >/dev/null; then
+  alias copy='xsel --clipboard --input'
+fi
 
 # Starship prompt, config lives in ~/.config/starship.toml.
 eval "$(starship init zsh)"
