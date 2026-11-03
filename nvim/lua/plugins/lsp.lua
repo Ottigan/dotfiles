@@ -110,10 +110,25 @@ local function setup_idle_shutdown()
     })
 end
 
+-- Prefer the project's own TypeScript over the global one, as projects may rely
+-- on syntax the global version cannot parse yet.
+local function find_project_tsc(root_dir)
+    for dir in vim.fs.parents(vim.fs.joinpath(root_dir, "_")) do
+        local tsc = vim.fs.joinpath(dir, "node_modules", "typescript", "bin", "tsc")
+        if vim.uv.fs_stat(tsc) then
+            return tsc
+        end
+    end
+    return "tsc"
+end
+
 local function setup_servers()
     local servers = {
         tsc = {
-            cmd = { "tsc", "--lsp", "--stdio" },
+            cmd = function(dispatchers, config)
+                local tsc = config.root_dir and find_project_tsc(config.root_dir) or "tsc"
+                return vim.lsp.rpc.start({ tsc, "--lsp", "--stdio" }, dispatchers, { cwd = config.root_dir })
+            end,
             filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
             root_markers = { "tsconfig.json", "jsconfig.json", "package.json", ".git" },
         },
