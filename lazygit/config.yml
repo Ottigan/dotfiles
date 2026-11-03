@@ -6,10 +6,20 @@ git:
       command: delta --side-by-side --paging=never --line-numbers --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}" --file-style="omit"
 os:
   editpreset: nvim
+keybinding:
+  commits:
+    amendToCommit: "<disabled>" # built-in "amend commit with staged changes"; or move it to another key
+customCommands:
+  - key: "A"
+    context: "commits"
+    description: "Amend staged changes into selected commit"
+    loadingText: "Amending..."
+    command: >-
+      git commit --fixup={{.SelectedLocalCommit.Hash}} --no-verify && GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash --autostash {{.SelectedLocalCommit.Hash}}~1
 gui:
   sidePanelWidth: 0.2
-  wrapLinesInStagingView: true
-  useHunkModeInStagingView: true
+  wrapLinesInDiffView: true
+  useHunkModeInDiffView: true
   skipDiscardChangeWarning: true
   showBottomLine: false
   nerdFontsVersion: "3"
