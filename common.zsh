@@ -21,9 +21,12 @@ export PATH="$HOME/.local/bin:$PATH" # Local scripts
 export PATH="$HOME/go/bin:$PATH"     # Go binaries.
 
 # Use neovim as the default editor.
-export SUDO_EDITOR=nvim
 export EDITOR=$(which nvim)
-export VISUAL="$EDITOR"
+export SUDO_EDITOR=$EDITOR
+export VISUAL=$EDITOR
+
+# Default browser
+export BROWSER=Vivaldi
 
 # Colorful sudo prompt.
 export SUDO_PROMPT="$(tput setaf 2 bold)Password: $(tput sgr0)"
