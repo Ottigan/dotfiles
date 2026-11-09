@@ -110,15 +110,36 @@ local function setup_idle_shutdown()
     })
 end
 
+-- TypeScript 7 ships its native binary as @typescript/typescript-<os>-<arch>.
+local function native_tsc_package()
+    local uname = vim.uv.os_uname()
+    local os = ({ Darwin = "darwin", Linux = "linux", Windows_NT = "win32" })[uname.sysname]
+    local arch = ({ x86_64 = "x64", aarch64 = "arm64" })[uname.machine] or uname.machine
+    return os and ("typescript-" .. os .. "-" .. arch) or nil
+end
+
 -- Prefer the project's own TypeScript over the global one, as projects may rely
--- on syntax the global version cannot parse yet.
+-- on syntax the global version cannot parse yet. The native TypeScript 7 binary
+-- is started directly rather than through `bin/tsc`, because projects may patch
+-- that wrapper to inject compiler flags (js-clients adds `--runExternalCode`)
+-- that the binary rejects in `--lsp` mode.
 local function find_project_tsc(root_dir)
+    -- Paths inside node_modules, in order of preference.
+    local candidates = { "typescript/bin/tsc" }
+    local native = native_tsc_package()
+    if native then
+        table.insert(candidates, 1, "@typescript/" .. native .. "/lib/tsc")
+    end
+
     for dir in vim.fs.parents(vim.fs.joinpath(root_dir, "_")) do
-        local tsc = vim.fs.joinpath(dir, "node_modules", "typescript", "bin", "tsc")
-        if vim.uv.fs_stat(tsc) then
-            return tsc
+        for _, candidate in ipairs(candidates) do
+            local tsc = vim.fs.joinpath(dir, "node_modules", candidate)
+            if vim.uv.fs_stat(tsc) then
+                return tsc
+            end
         end
     end
+
     return "tsc"
 end
 
@@ -129,8 +150,31 @@ local function setup_servers()
                 local tsc = config.root_dir and find_project_tsc(config.root_dir) or "tsc"
                 return vim.lsp.rpc.start({ tsc, "--lsp", "--stdio" }, dispatchers, { cwd = config.root_dir })
             end,
-            filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
-            root_markers = { "tsconfig.json", "jsconfig.json", "package.json", ".git" },
+            filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact", "css", "scss" },
+            root_dir = function(bufnr, on_dir)
+                -- Content mappers type CSS modules, so stylesheets are attached too,
+                -- but only .css/.pcss (.pcss has the scss filetype) inside TS projects.
+                local ft = vim.bo[bufnr].filetype
+                if ft == "css" or ft == "scss" then
+                    local ext = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":e")
+                    if ext ~= "css" and ext ~= "pcss" then
+                        return
+                    end
+                    if not vim.fs.root(bufnr, "tsconfig.json") then
+                        return
+                    end
+                end
+
+                local root = vim.fs.root(bufnr, ".git")
+                    or vim.fs.root(bufnr, { "tsconfig.json", "jsconfig.json", "package.json" })
+                if root then
+                    on_dir(root)
+                end
+            end,
+            -- Content mappers (tsconfig `contentMappers`) execute code from the
+            -- project's node_modules and only start with this opt-in; it is the
+            -- equivalent of VS Code's `js/ts.contentMappers.enabled`.
+            init_options = { runExternalCode = true },
         },
         eslint = {
             cmd = { "vscode-eslint-language-server", "--stdio" },
