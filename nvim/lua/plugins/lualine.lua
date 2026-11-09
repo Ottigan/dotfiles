@@ -43,7 +43,11 @@ return {
 
                         return mode
                     end,
-                    cond = function() return require("noice").api.status.mode.has() end,
+                    -- Don't force-load noice from the statusline; it arrives on
+                    -- VeryLazy and the component starts showing up from then on.
+                    cond = function()
+                        return package.loaded["noice"] ~= nil and require("noice").api.status.mode.has()
+                    end,
                     color = { fg = "#ff9e64" },
                 },
             },

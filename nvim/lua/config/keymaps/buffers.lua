@@ -1,0 +1,7 @@
+vim.keymap.set("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev" })
+vim.keymap.set("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next" })
+vim.keymap.set("n", "<leader>bb", "<C-^>", { desc = "Alternate [b]uffer" })
+vim.keymap.set("n", "<leader>bd", require("config.buffers").delete, { desc = "[d]elete" })
+vim.keymap.set("n", "<leader>bo", "<cmd>BufferLineCloseOthers<cr>", { desc = "Delete others" })
+vim.keymap.set("n", "<leader>bh", "<cmd>BufferLineCloseLeft<cr>", { desc = "Delete left" })
+vim.keymap.set("n", "<leader>bl", "<cmd>BufferLineCloseRight<cr>", { desc = "Delete right" })

@@ -54,6 +54,7 @@ return { -- Collection of various small independent plugins/modules
                 { mode = "n", keys = "<Leader>g", desc = "+Git" },
                 { mode = "n", keys = "<Leader>n", desc = "+Notifications" },
                 { mode = "n", keys = "<Leader>c", desc = "+Copy" },
+                { mode = { "n", "x" }, keys = "<Leader>o", desc = "+Open" },
                 { mode = "n", keys = "<Leader>t", desc = "+Test" },
                 { mode = "n", keys = "<Leader>d", desc = "+Debug" },
                 { mode = "n", keys = "<Leader>q", desc = "+Quit/Session" },
@@ -213,6 +214,31 @@ return { -- Collection of various small independent plugins/modules
             vim.keymap.set("n", lhs, rhs, { buffer = buf_id, desc = desc })
         end
 
+        -- mini.clue only adds triggers to listed buffers, and mini.files buffers are unlisted.
+        -- Without a <Leader> trigger a slow `<Leader>o…` times out into <Space> + `o` (open line).
+        -- Triggers replace buffer-local maps with the same keys (mini.files' `'` bookmarks),
+        -- so put those back afterwards.
+        local function ensure_clue_triggers(buf_id)
+            vim.api.nvim_buf_call(buf_id, function()
+                local replaced = {}
+                for _, trigger in ipairs(miniclue.config.triggers) do
+                    local modes = type(trigger.mode) == "table" and trigger.mode or { trigger.mode }
+                    for _, mode in ipairs(modes) do
+                        local map = vim.fn.maparg(trigger.keys, mode, false, true)
+                        if map.buffer == 1 then
+                            table.insert(replaced, map)
+                        end
+                    end
+                end
+
+                miniclue.ensure_buf_triggers(buf_id)
+
+                for _, map in ipairs(replaced) do
+                    vim.fn.mapset(map)
+                end
+            end)
+        end
+
         local mini_files_group = vim.api.nvim_create_augroup("MiniFilesConfig", { clear = true })
 
         vim.api.nvim_create_autocmd("User", {
@@ -231,6 +257,23 @@ return { -- Collection of various small independent plugins/modules
 
                 map_split(buf_id, "<C-s>", "horizontal", true)
                 map_split(buf_id, "<C-v>", "vertical", true)
+
+                -- The global maps expand `%` to this minifiles:// buffer, so use the entry under the cursor.
+                -- shellescape(…, true) also escapes `%`, `#` and `!`, which `:!` would otherwise expand.
+                local function open_entry(flags)
+                    return function()
+                        local entry = MiniFiles.get_fs_entry()
+                        if entry then
+                            vim.cmd("silent !open " .. flags .. vim.fn.shellescape(entry.path, true))
+                        end
+                    end
+                end
+
+                vim.keymap.set("n", "<leader>od", open_entry("-R "), { buffer = buf_id, desc = "Open file directory" })
+                vim.keymap.set("n", "<leader>of", open_entry(""), { buffer = buf_id, desc = "Open file" })
+
+                -- Must run after all buffer-local maps above.
+                ensure_clue_triggers(buf_id)
             end,
         })
 

@@ -1,5 +1,8 @@
 return {
     "ibhagwan/fzf-lua",
+    -- Load at startup: setup() replaces `vim.ui.select` (styled by `ui_select`
+    -- below), which code actions and other prompts rely on.
+    lazy = false,
     keys = {
         {
             "<leader>sh",

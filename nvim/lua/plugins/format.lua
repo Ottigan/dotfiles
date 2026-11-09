@@ -1,6 +1,6 @@
 return {
     "stevearc/conform.nvim",
-    event = "VimEnter",
+    event = "BufWritePre",
     cmd = { "ConformInfo" },
     keys = {
         {
@@ -34,10 +34,13 @@ return {
             },
         },
         formatters_by_ft = {
-            javascript = { "eslint_d" },
-            typescript = { "eslint_d" },
-            javascriptreact = { "eslint_d" },
-            typescriptreact = { "eslint_d" },
+            -- No external formatter: ESLint fixes come from the `eslint` language
+            -- server (its `format` setting, see lsp.lua) through the LSP fallback
+            -- below. `name` keeps `tsc` from formatting these filetypes too.
+            javascript = { name = "eslint" },
+            typescript = { name = "eslint" },
+            javascriptreact = { name = "eslint" },
+            typescriptreact = { name = "eslint" },
             markdown = { "prettierd" },
             scss = { "stylelint" },
             yaml = { "prettierd" },

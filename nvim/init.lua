@@ -3,6 +3,7 @@ require("config.options")
 require("config.keymaps")
 require("config.autocmds")
 require("config.terminal")
+require("config.idle_buffers").setup()
 
 local mise_shims = vim.fn.expand("~/.local/share/mise/shims")
 if not vim.env.PATH:find(mise_shims, 1, true) then

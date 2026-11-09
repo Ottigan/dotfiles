@@ -1,3 +1,15 @@
+-- Scroll an open LSP hover/signature window, otherwise fall back to the key.
+-- These maps replace the centered `<C-u>zz`/`<C-d>zz` from config/keymaps/scrolling.lua,
+-- so keep the centering here, but only in normal mode: in insert mode the keys
+-- delete text and a trailing `zz` would be typed into the buffer.
+local function lsp_scroll_or(delta, key)
+    if require("noice.lsp").scroll(delta) then
+        return
+    end
+
+    return vim.fn.mode() == "n" and key .. "zz" or key
+end
+
 return {
     "folke/noice.nvim",
     event = "VeryLazy",
@@ -137,9 +149,7 @@ return {
         {
             "<c-u>",
             function()
-                if not require("noice.lsp").scroll(-4) then
-                    return "<c-u>"
-                end
+                return lsp_scroll_or(-4, "<c-u>")
             end,
             silent = true,
             expr = true,
@@ -149,9 +159,7 @@ return {
         {
             "<c-d>",
             function()
-                if not require("noice.lsp").scroll(4) then
-                    return "<c-d>"
-                end
+                return lsp_scroll_or(4, "<c-d>")
             end,
             silent = true,
             expr = true,

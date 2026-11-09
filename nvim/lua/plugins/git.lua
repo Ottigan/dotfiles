@@ -81,8 +81,8 @@ return {
         "linrongbin16/gitlinker.nvim",
         cmd = { "GitLink" },
         keys = {
-            { "<leader>cu", "<cmd>GitLink<cr>", mode = { "n", "v" }, desc = "Copy remote URL" },
-            { "<leader>cU", "<cmd>GitLink!<cr>", mode = { "n", "v" }, desc = "Open remote URL" },
+            { "<leader>cu", "<cmd>GitLink<cr>", mode = { "n", "v" }, desc = "Copy upstream URL" },
+            { "<leader>ou", "<cmd>GitLink!<cr>", mode = { "n", "v" }, desc = "Open upstream URL" },
         },
         opts = {
             router = {

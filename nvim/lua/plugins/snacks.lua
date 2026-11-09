@@ -35,9 +35,15 @@ local function source_js_or_ts(self)
         script = script .. line .. "\n"
     end
 
-    vim.system({ "node", "-e", script }, { text = true }, function(result)
+    -- Cap runtime so an endless loop can't leave a node process behind.
+    vim.system({ "node", "-e", script }, { text = true, timeout = 10000 }, function(result)
         vim.schedule(function()
             if not vim.api.nvim_buf_is_valid(buf) then
+                return
+            end
+
+            if result.code == 124 then
+                vim.notify("Script timed out after 10s and was killed", vim.log.levels.WARN)
                 return
             end
 

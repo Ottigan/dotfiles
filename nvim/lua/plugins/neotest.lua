@@ -177,39 +177,65 @@ return {
                 require("neotest-go"),
             },
         })
-
-        vim.keymap.set("n", "<leader>tn", function()
-            neotest.run.run()
-        end, { desc = "[N]earest" })
-
-        vim.keymap.set("n", "<leader>tf", function()
-            neotest.run.run(vim.fn.expand("%"))
-        end, { desc = "[F]ile" })
-
-        vim.keymap.set("n", "<leader>to", function()
-            neotest.output.open({ enter = true })
-        end, { desc = "[O]utput" })
-
-        vim.keymap.set("n", "<leader>ts", function()
-            kill_test_output()
-            neotest.summary.toggle()
-        end, { desc = "[S]ummary" })
-
-        vim.keymap.set("n", "<leader>tp", function()
-            kill_test_output()
-            neotest.output_panel.toggle()
-        end, { desc = "[P]anel" })
-
-        vim.keymap.set("n", "<leader>tc", function()
-            neotest.output_panel.clear()
-        end, { desc = "[C]lear" })
-
-        vim.keymap.set("n", "<leader>tl", function()
-            neotest.run.run_last()
-        end, { desc = "[L]ast" })
-
-        vim.keymap.set("n", "<leader>td", function()
-            neotest.run.run({ strategy = "dap", suite = false })
-        end, { desc = "[D]ebug" })
     end,
+    keys = {
+        {
+            "<leader>tn",
+            function()
+                require("neotest").run.run()
+            end,
+            desc = "[N]earest",
+        },
+        {
+            "<leader>tf",
+            function()
+                require("neotest").run.run(vim.fn.expand("%"))
+            end,
+            desc = "[F]ile",
+        },
+        {
+            "<leader>to",
+            function()
+                require("neotest").output.open({ enter = true })
+            end,
+            desc = "[O]utput",
+        },
+        {
+            "<leader>ts",
+            function()
+                kill_test_output()
+                require("neotest").summary.toggle()
+            end,
+            desc = "[S]ummary",
+        },
+        {
+            "<leader>tp",
+            function()
+                kill_test_output()
+                require("neotest").output_panel.toggle()
+            end,
+            desc = "[P]anel",
+        },
+        {
+            "<leader>tc",
+            function()
+                require("neotest").output_panel.clear()
+            end,
+            desc = "[C]lear",
+        },
+        {
+            "<leader>tl",
+            function()
+                require("neotest").run.run_last()
+            end,
+            desc = "[L]ast",
+        },
+        {
+            "<leader>td",
+            function()
+                require("neotest").run.run({ strategy = "dap", suite = false })
+            end,
+            desc = "[D]ebug",
+        },
+    },
 }

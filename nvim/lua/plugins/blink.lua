@@ -1,5 +1,6 @@
 return {
     "saghen/blink.cmp",
+    event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
         "saghen/blink.lib",
         -- optional: provides snippets for the snippet source

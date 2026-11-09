@@ -4,7 +4,7 @@ local group = vim.api.nvim_create_augroup("Config", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
     group = group,
     callback = function()
-        vim.highlight.on_yank()
+        vim.hl.on_yank()
     end,
 })
 
@@ -64,6 +64,10 @@ vim.api.nvim_create_autocmd("FileType", {
             if not vim.api.nvim_buf_is_valid(ev.buf) then
                 return
             end
+
+            -- FileType re-fires on `:e` / `:set ft=image`; drop the previous
+            -- registration so BufEnter handlers don't accumulate per buffer.
+            vim.api.nvim_clear_autocmds({ group = group, buffer = ev.buf, event = "BufEnter" })
 
             vim.api.nvim_create_autocmd("BufEnter", {
                 group = group,

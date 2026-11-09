@@ -6,30 +6,22 @@ local function setup_filetypes()
     })
 end
 
+-- Shorter, nicer names for some diagnostic sources.
+local SPECIAL_SOURCES = {
+    ["Lua Diagnostics."] = "lua",
+    ["Lua Syntax Check."] = "lua",
+}
+
 local function setup_diagnostics()
     -- Diagnostic configuration.
     vim.diagnostic.config({
-        status = {
-            format = {
-                [vim.diagnostic.severity.ERROR] = MiniIcons.get("lsp", "ERROR"),
-                [vim.diagnostic.severity.WARN] = MiniIcons.get("lsp", "WARN"),
-                [vim.diagnostic.severity.INFO] = MiniIcons.get("lsp", "INFO"),
-                [vim.diagnostic.severity.HINT] = MiniIcons.get("lsp", "HINT"),
-            },
-        },
         virtual_text = {
             prefix = "",
             spacing = 2,
             format = function(diagnostic)
-                -- Use shorter, nicer names for some sources:
-                local special_sources = {
-                    ["Lua Diagnostics."] = "lua",
-                    ["Lua Syntax Check."] = "lua",
-                }
-
                 local message = MiniIcons.get("lsp", vim.diagnostic.severity[diagnostic.severity])
                 if diagnostic.source then
-                    message = string.format("%s %s", message, special_sources[diagnostic.source] or diagnostic.source)
+                    message = string.format("%s %s", message, SPECIAL_SOURCES[diagnostic.source] or diagnostic.source)
                 end
                 if diagnostic.code then
                     message = string.format("%s[%s]", message, diagnostic.code)
@@ -176,58 +168,16 @@ local function setup_servers()
             -- equivalent of VS Code's `js/ts.contentMappers.enabled`.
             init_options = { runExternalCode = true },
         },
+        -- Only the overrides. cmd, root_dir (one server per lockfile/.git root),
+        -- the workspace folder setup, handlers and the remaining settings come
+        -- from nvim-lspconfig's lsp/eslint.lua.
         eslint = {
-            cmd = { "vscode-eslint-language-server", "--stdio" },
             filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
-            root_markers = {
-                ".eslintrc",
-                ".eslintrc.js",
-                ".eslintrc.json",
-                "eslint.config.js",
-                "eslint.config.cjs",
-                "eslint.config.mjs",
-            },
             settings = {
-                validate = "on",
-                packageManager = vim.NIL,
-                useESLintClass = false,
                 experimental = { useFlatConfig = true },
-                codeActionOnSave = { enable = false, mode = "all" },
-                format = false,
-                quiet = false,
-                onIgnoredFiles = "off",
-                options = {},
-                rulesCustomizations = {},
+                format = true,
                 run = "onSave",
-                problems = { shortenToSingleLine = false },
-                nodePath = "",
                 workingDirectory = { mode = "location" },
-                codeAction = {
-                    disableRuleComment = { enable = true, location = "separateLine" },
-                    showDocumentation = { enable = true },
-                },
-            },
-            before_init = function(params, config)
-                -- Set the workspace folder setting for correct search of tsconfig.json files etc.
-                config.settings.workspaceFolder = {
-                    uri = params.rootPath,
-                    name = vim.fn.fnamemodify(params.rootPath, ":t"),
-                }
-            end,
-            ---@type table<string, lsp.Handler>
-            handlers = {
-                ["eslint/openDoc"] = function(_, params)
-                    vim.ui.open(params.url)
-                    return {}
-                end,
-                ["eslint/probeFailed"] = function()
-                    vim.notify("LSP[eslint]: Probe failed.", vim.log.levels.WARN)
-                    return {}
-                end,
-                ["eslint/noLibrary"] = function()
-                    vim.notify("LSP[eslint]: Unable to load ESLint library.", vim.log.levels.WARN)
-                    return {}
-                end,
             },
         },
         gopls = {
@@ -300,12 +250,11 @@ local function setup_servers()
                     runtime = {
                         version = "LuaJIT",
                     },
+                    -- No `library` here: lazydev adds VIMRUNTIME and luv only for
+                    -- Neovim config/plugin workspaces, so other Lua projects don't
+                    -- index the whole runtime.
                     workspace = {
                         checkThirdParty = false,
-                        library = {
-                            vim.env.VIMRUNTIME,
-                            "${3rd}/luv/library",
-                        },
                     },
                 },
             },
