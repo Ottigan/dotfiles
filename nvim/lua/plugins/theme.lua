@@ -18,10 +18,6 @@ return {
             highlights.BlinkCmpMenuBorder = { bg = "none", fg = colors.blue }
             highlights.BlinkCmpScrollBarThumb = { bg = colors.blue }
             highlights.BlinkCmpScrollBarGutter = { bg = "none" }
-
-            -- FzfLua
-            highlights.FzfLuaBorder = { bg = "none", fg = colors.blue }
-            highlights.FzfLuaNormal = { bg = "none" }
         end,
         transparent = true,
         styles = {

@@ -37,20 +37,23 @@ local function setup_diagnostics()
 end
 
 local function setup_lsp_keymaps()
-    local FzfLua = require("fzf-lua")
-
+    -- `source` is a snacks picker source.
     local keymaps = {
-        { keys = "gri", callback = FzfLua.lsp_implementations, desc = "Goto [I]mplementation" },
-        { keys = "grr", callback = FzfLua.lsp_references, desc = "Goto [R]eferences" },
-        { keys = "grt", callback = FzfLua.lsp_typedefs, desc = "Goto [T]ype Definition" },
-        { keys = "grd", callback = FzfLua.lsp_definitions, desc = "Goto [D]efinition" },
+        { keys = "gri", source = "lsp_implementations", desc = "Goto [I]mplementation" },
+        { keys = "grr", source = "lsp_references", desc = "Goto [R]eferences" },
+        { keys = "grt", source = "lsp_type_definitions", desc = "Goto [T]ype Definition" },
+        { keys = "grd", source = "lsp_definitions", desc = "Goto [D]efinition" },
         { keys = "grD", callback = vim.lsp.buf.declaration, desc = "Goto [D]eclaration" },
-        { keys = "gO", callback = FzfLua.lsp_document_symbols, desc = "Document Symbols" },
-        { keys = "gW", callback = FzfLua.lsp_live_workspace_symbols, desc = "Workspace Symbols" },
+        { keys = "gO", source = "lsp_symbols", desc = "Document Symbols" },
+        { keys = "gW", source = "lsp_workspace_symbols", desc = "Workspace Symbols" },
     }
 
     for _, mapping in ipairs(keymaps) do
-        vim.keymap.set("n", mapping.keys, mapping.callback, {
+        local callback = mapping.callback or function()
+            Snacks.picker[mapping.source]()
+        end
+
+        vim.keymap.set("n", mapping.keys, callback, {
             desc = "LSP: " .. mapping.desc,
         })
     end

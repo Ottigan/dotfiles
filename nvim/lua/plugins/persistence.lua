@@ -8,50 +8,6 @@ local function close_neotest_windows()
     end
 end
 
-local function select_session()
-    local persistence = require("persistence")
-    local opts = require("persistence.config").options
-    local items = {}
-    local have = {}
-
-    for _, session in ipairs(persistence.list()) do
-        if vim.uv.fs_stat(session) then
-            local file = session:sub(#opts.dir + 1, -5)
-            local dir = file:gsub("%%", "/")
-
-            if not have[dir] then
-                items[#items + 1] = { session = session, dir = dir }
-                have[dir] = true
-            end
-        end
-    end
-
-    if #items == 0 then
-        vim.notify("No sessions found", vim.log.levels.INFO, { title = "Persistence" })
-        return
-    end
-
-    require("snacks.picker").select(items, {
-        prompt = "Select a session: ",
-        format_item = function(item)
-            return vim.fn.fnamemodify(item.dir, ":p:~")
-        end,
-    }, function(item)
-        if item then
-            -- Clear/close buffers from previous session before loading a new one
-            close_neotest_windows()
-
-            for _, id in ipairs(vim.api.nvim_list_bufs()) do
-                vim.bo[id].buflisted = false
-                vim.api.nvim_buf_delete(id, { force = true })
-            end
-
-            vim.fn.chdir(item.dir)
-            persistence.load()
-        end
-    end)
-end
-
 return {
     "folke/persistence.nvim",
     event = "VimEnter",
@@ -69,6 +25,13 @@ return {
             group = group,
             pattern = "PersistenceLoadPre",
             callback = function()
+                -- Clear/close buffers from the previous session before loading a new one
+                close_neotest_windows()
+
+                for _, id in ipairs(vim.api.nvim_list_bufs()) do
+                    vim.api.nvim_buf_delete(id, { force = true })
+                end
+
                 persistence.start()
                 vim.notify("Loading session...", vim.log.levels.INFO, { title = "Persistence" })
             end,
@@ -103,7 +66,7 @@ return {
             local first_arg = vim.fn.argv()[1]
 
             if not first_arg then
-                return select_session()
+                return persistence.select()
             end
 
             if vim.fn.isdirectory(first_arg) == 0 then
@@ -128,7 +91,7 @@ return {
         {
             "<leader>ql",
             function()
-                select_session()
+                require("persistence").select()
             end,
             desc = "[L]ist sessions",
         },
