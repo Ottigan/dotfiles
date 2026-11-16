@@ -101,7 +101,7 @@ return {
         {
             "<leader>sn",
             function()
-                require("noice").cmd("snacks")
+                require("noice").cmd("fzf")
             end,
             desc = "[N]otifications",
         },

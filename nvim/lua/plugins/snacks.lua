@@ -133,13 +133,6 @@ return {
             desc = "Toggle scratch buffer",
         },
         {
-            "<leader>ss",
-            function()
-                Snacks.scratch.select()
-            end,
-            desc = "[S]elect [s]cratch buffer",
-        },
-        {
             "<leader>gg",
             function()
                 Snacks.lazygit()

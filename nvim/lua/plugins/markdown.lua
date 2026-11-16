@@ -36,7 +36,7 @@ return {
             -- No `setup()`; the plugin reads its config from this module.
             require("livepreview.config").set({
                 -- Keyed by the enum *value* in `livepreview.config.pickers`.
-                picker = "snacks.picker",
+                picker = "fzf-lua",
             })
         end,
     },

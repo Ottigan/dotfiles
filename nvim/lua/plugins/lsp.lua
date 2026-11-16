@@ -37,20 +37,20 @@ local function setup_diagnostics()
 end
 
 local function setup_lsp_keymaps()
-    -- `source` is a snacks picker source.
+    -- `source` is an fzf-lua provider.
     local keymaps = {
         { keys = "gri", source = "lsp_implementations", desc = "Goto [I]mplementation" },
         { keys = "grr", source = "lsp_references", desc = "Goto [R]eferences" },
-        { keys = "grt", source = "lsp_type_definitions", desc = "Goto [T]ype Definition" },
+        { keys = "grt", source = "lsp_typedefs", desc = "Goto [T]ype Definition" },
         { keys = "grd", source = "lsp_definitions", desc = "Goto [D]efinition" },
         { keys = "grD", callback = vim.lsp.buf.declaration, desc = "Goto [D]eclaration" },
-        { keys = "gO", source = "lsp_symbols", desc = "Document Symbols" },
-        { keys = "gW", source = "lsp_workspace_symbols", desc = "Workspace Symbols" },
+        { keys = "gO", source = "lsp_document_symbols", desc = "Document Symbols" },
+        { keys = "gW", source = "lsp_live_workspace_symbols", desc = "Workspace Symbols" },
     }
 
     for _, mapping in ipairs(keymaps) do
         local callback = mapping.callback or function()
-            Snacks.picker[mapping.source]()
+            require("fzf-lua")[mapping.source]()
         end
 
         vim.keymap.set("n", mapping.keys, callback, {
