@@ -20,36 +20,28 @@ set.shiftwidth = 2 -- Indent width
 set.softtabstop = 2 -- Soft tab stop
 set.expandtab = true -- Use spaces instead of tabs
 set.smartindent = true -- Smart auto-indenting
-set.autoindent = true -- Copy indent from current line
 set.breakindent = true -- Wrapped lines will be indented
 
 -- Search settings
 set.ignorecase = true -- Case-insensitive search
 set.smartcase = true -- Case-sensitive if uppercase letters are used
-set.hlsearch = true -- Highlight search results
-set.incsearch = true -- Show search matches as you type
 
 -- Visual settings
-set.termguicolors = true -- Enable 24-bit colors
 set.signcolumn = "yes" -- Always show the sign column
 set.winborder = "rounded" -- Rounded float borders
-vim.g.have_nerd_font = true -- Assume Nerd Font is available for icons
 set.showmatch = true -- Highlight matching brackets
 set.matchtime = 2 -- How long to show match
 set.completeopt = "menuone,noselect" -- Completion options
 set.showmode = false -- Don't show -- INSERT -- etc.
 set.pumheight = 10 -- Popup menu height
 set.pumblend = 10 -- Popup transparency
-set.winblend = 0 -- Floating window transparency
 set.list = true -- Show whitespace characters
 set.listchars = { tab = "→ ", trail = ".", lead = " ", nbsp = "␣" }
-set.conceallevel = 0 -- Conceal text unless it has a custom replacement character
-set.concealcursor = "" -- Don't hide markup in cursor line
 set.synmaxcol = 300 -- Don't syntax highlight long lines
+set.foldlevelstart = 99 -- Start with all folds open
 vim.o.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,t:ver25"
 
 -- File handling
-set.backup = false -- Don't create backup files
 set.writebackup = false -- Don't create backup files while writing
 set.swapfile = false -- Don't create swap files
 set.undofile = true -- Enable persistent undo
@@ -57,22 +49,15 @@ set.undodir = vim.fn.expand("~/.vim/undodir") -- Undo directory
 set.updatetime = 500 -- CursorHold delay; lower = more frequent LSP/gitsigns polling
 set.timeoutlen = 500 -- Faster key sequence timeout
 set.ttimeoutlen = 0 -- Don't wait for key codes
-set.autoread = true -- Auto-reload files changed outside of Vim
-set.autowrite = false -- Don't auto-save files
 
 -- Behaviour settings
-set.hidden = true -- Allow hidden buffers
-set.errorbells = false -- Disable error bells
-set.backspace = "indent,eol,start" -- Backspace behavior
-set.autochdir = false -- Don't change working directory automatically
-set.selection = "inclusive" -- Selection behavior required for snippet placeholders
 set.mouse = "a" -- Enable mouse support
 set.clipboard:append("unnamedplus") -- Use system clipboard
-set.modifiable = true -- Allow modifying buffers
-set.encoding = "utf-8" -- Set encoding
 set.confirm = true -- Confirm before exiting with unsaved changes
-set.inccommand = "nosplit" -- Show live preview of substitutions
 
 -- Split behavior
 set.splitbelow = true -- Horizontal splits go below
 set.splitright = true -- Vertical splits go right
+
+-- Filetypes
+vim.filetype.add({ extension = { pcss = "scss" } })

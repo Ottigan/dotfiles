@@ -5,69 +5,25 @@ local jest_config_files = {
     "jest.config.mjs",
 }
 
-local jest_lockfiles = {
-    "pnpm-lock.yaml",
-    "yarn.lock",
-    "bun.lock",
-}
-
 local jest_commands = {
     ["pnpm-lock.yaml"] = "pnpm jest",
     ["yarn.lock"] = "yarn jest",
     ["bun.lock"] = "bun jest",
 }
 
-local function current_dir()
-    local cwd = vim.uv.cwd()
-    if not cwd then
-        error("Failed to determine current working directory for neotest-jest")
-    end
-
-    return vim.fs.normalize(cwd)
-end
-
-local function parent_dir(path)
-    return vim.fs.normalize(vim.fs.dirname(path))
-end
-
-local function find_file_upward(names, start, stop)
-    local dir = vim.fs.normalize(start)
-    local root = vim.fs.normalize(stop)
-
-    while dir do
-        -- Check for the presence of any of the specified files in the current directory
-        for _, name in ipairs(names) do
-            local candidate = dir .. "/" .. name
-            if vim.uv.fs_stat(candidate) ~= nil then
-                return candidate
-            end
-        end
-
-        -- Stop if we've reached the root directory
-        if dir == root then
-            break
-        end
-
-        -- Move up to the parent directory
-        dir = parent_dir(dir)
-        if not dir then
-            break
-        end
-    end
-
-    return nil
+-- Nearest of `names` from the directory of `path` up to and including the cwd
+-- (`stop` itself is never searched, hence its parent).
+local function find_upward(names, path)
+    return vim.fs.find(names, {
+        upward = true,
+        path = vim.fs.dirname(path),
+        stop = vim.fs.dirname(vim.fn.getcwd()),
+    })[1]
 end
 
 local function jest_cmd(path)
-    local root = current_dir()
-    local start = parent_dir(path)
-    local lockfile = find_file_upward(jest_lockfiles, start, root)
-
-    if lockfile then
-        return jest_commands[vim.fs.basename(lockfile)]
-    end
-
-    return "npx jest"
+    local lockfile = find_upward(vim.tbl_keys(jest_commands), path)
+    return lockfile and jest_commands[vim.fs.basename(lockfile)] or "npx jest"
 end
 
 -- neotest parses test files in a child `nvim --embed --headless -n -u NONE`. It
@@ -133,7 +89,6 @@ return {
     dependencies = {
         "nvim-neotest/nvim-nio",
         "nvim-lua/plenary.nvim",
-        "nvim-treesitter/nvim-treesitter",
         "nvim-neotest/neotest-jest",
         "nvim-neotest/neotest-go",
         "marilari88/neotest-vitest",
@@ -144,7 +99,7 @@ return {
 
         --- @diagnostic disable: duplicate-set-field
         js_clients_jest.root = function()
-            return current_dir()
+            return vim.fn.getcwd()
         end
 
         ---@diagnostic disable: missing-fields
@@ -154,15 +109,11 @@ return {
             },
             projects = {
                 ["~/Documents/js-clients"] = {
-                    discovery = { concurrent = 0, enabled = false },
                     adapters = {
                         js_clients_jest({
                             jestCommand = jest_cmd,
                             jestConfigFile = function(file)
-                                local root = current_dir()
-                                local start = parent_dir(file)
-                                local config = find_file_upward(jest_config_files, start, root)
-                                return config
+                                return find_upward(jest_config_files, file)
                             end,
                         }),
                     },

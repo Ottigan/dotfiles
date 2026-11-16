@@ -43,12 +43,10 @@ end
 
 return {
     "nvim-treesitter/nvim-treesitter",
-    build = "<cmd>TSUpdate",
+    build = ":TSUpdate",
     lazy = false,
     config = function()
         require("nvim-treesitter").install(parsers)
-
-        vim.opt.foldlevelstart = 99 -- Start with all folds open
 
         vim.api.nvim_create_autocmd("FileType", {
             group = vim.api.nvim_create_augroup("TreesitterFolds", { clear = true }),

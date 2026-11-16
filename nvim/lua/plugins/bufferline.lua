@@ -12,16 +12,15 @@ return {
         },
         config = function()
             local bufferline = require("bufferline")
-            local buffers = require("config.buffers")
+
+            local function delete(bufnr)
+                Snacks.bufdelete({ buf = bufnr, force = true })
+            end
 
             bufferline.setup({
                 options = {
-                    close_command = function(bufnr)
-                        buffers.delete(bufnr, { force = true })
-                    end,
-                    right_mouse_command = function(bufnr)
-                        buffers.delete(bufnr, { force = true })
-                    end,
+                    close_command = delete,
+                    right_mouse_command = delete,
                     style_preset = bufferline.style_preset.no_italic,
                     separator_style = { " │", " │" },
                     indicator = { style = "underline" },

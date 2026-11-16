@@ -4,112 +4,21 @@ return {
     -- below), which code actions and other prompts rely on.
     lazy = false,
     keys = {
-        {
-            "<leader>sh",
-            function()
-                require("fzf-lua").help_tags()
-            end,
-            desc = "[H]elp",
-        },
-        {
-            "<leader>sk",
-            function()
-                require("fzf-lua").keymaps()
-            end,
-            desc = "[K]eymaps",
-        },
-        {
-            "<leader>sf",
-            function()
-                require("fzf-lua").files()
-            end,
-            desc = "[F]iles",
-        },
-        {
-            "<leader>sq",
-            function()
-                require("fzf-lua").lgrep_quickfix()
-            end,
-            desc = "[Q]uickfix",
-        },
-        {
-            "<leader>sb",
-            function()
-                require("fzf-lua").builtin()
-            end,
-            desc = "[B]uiltin",
-        },
-        {
-            "<leader>sg",
-            function()
-                require("fzf-lua").live_grep()
-            end,
-            desc = "[G]rep",
-        },
-        {
-            "<leader>sd",
-            function()
-                require("fzf-lua").diagnostics_workspace()
-            end,
-            desc = "[D]iagnostics",
-        },
-        {
-            "<leader>sr",
-            function()
-                require("fzf-lua").resume()
-            end,
-            desc = "[R]esume",
-        },
-        {
-            "<leader>sc",
-            function()
-                require("fzf-lua").commands()
-            end,
-            desc = "[C]ommands",
-        },
-        {
-            "<leader><leader>",
-            function()
-                require("fzf-lua").buffers()
-            end,
-            desc = "Buffers",
-        },
-        {
-            "<leader>sv",
-            function()
-                require("fzf-lua").nvim_options()
-            end,
-            desc = "[V]im",
-        },
-        {
-            "<leader>sw",
-            function()
-                require("fzf-lua").grep_cword()
-            end,
-            desc = "[W]ord",
-        },
-        {
-            "<leader>sw",
-            function()
-                require("fzf-lua").grep_visual()
-            end,
-            mode = "v",
-            desc = "[W]ord",
-        },
-        {
-            "<leader>so",
-            function()
-                require("fzf-lua").oldfiles()
-            end,
-            desc = "[O]ld Files",
-        },
-        {
-            "<leader>/",
-            function()
-                require("fzf-lua").lgrep_curbuf()
-            end,
-            desc = "Grep Buffer",
-        },
+        { "<leader>sh", "<cmd>FzfLua help_tags<cr>", desc = "[H]elp" },
+        { "<leader>sk", "<cmd>FzfLua keymaps<cr>", desc = "[K]eymaps" },
+        { "<leader>sf", "<cmd>FzfLua files<cr>", desc = "[F]iles" },
+        { "<leader>sq", "<cmd>FzfLua lgrep_quickfix<cr>", desc = "[Q]uickfix" },
+        { "<leader>sb", "<cmd>FzfLua builtin<cr>", desc = "[B]uiltin" },
+        { "<leader>sg", "<cmd>FzfLua live_grep<cr>", desc = "[G]rep" },
+        { "<leader>sd", "<cmd>FzfLua diagnostics_workspace<cr>", desc = "[D]iagnostics" },
+        { "<leader>sr", "<cmd>FzfLua resume<cr>", desc = "[R]esume" },
+        { "<leader>sc", "<cmd>FzfLua commands<cr>", desc = "[C]ommands" },
+        { "<leader><leader>", "<cmd>FzfLua buffers<cr>", desc = "Buffers" },
+        { "<leader>sv", "<cmd>FzfLua nvim_options<cr>", desc = "[V]im" },
+        { "<leader>sw", "<cmd>FzfLua grep_cword<cr>", desc = "[W]ord" },
+        { "<leader>sw", "<cmd>FzfLua grep_visual<cr>", mode = "v", desc = "[W]ord" },
+        { "<leader>so", "<cmd>FzfLua oldfiles<cr>", desc = "[O]ld Files" },
+        { "<leader>/", "<cmd>FzfLua lgrep_curbuf<cr>", desc = "Grep Buffer" },
         {
             "<leader>sp",
             function()

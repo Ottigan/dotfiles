@@ -26,13 +26,6 @@ return {
     ---@module "conform"
     ---@type conform.setupOpts
     opts = {
-        formatters = {
-            prettierd = {
-                command = "prettierd",
-                args = { "--stdin-filepath", "$FILENAME" },
-                stdin = true,
-            },
-        },
         formatters_by_ft = {
             -- No external formatter: ESLint fixes come from the `eslint` language
             -- server (its `format` setting, see lsp.lua) through the LSP fallback

@@ -66,6 +66,46 @@ local function source_js_or_ts(self)
     end)
 end
 
+local js_scratch_win = {
+    keys = {
+        source = { "<cr>", source_js_or_ts, desc = "Source buffer", mode = { "n", "x" } },
+    },
+}
+
+-- Floating shell that hides as soon as focus leaves it. A single <Esc> returns
+-- to normal mode instead of Snacks' default double <Esc>.
+local function toggle_terminal()
+    local term = Snacks.terminal.toggle(nil, {
+        win = {
+            position = "float",
+            width = 0.8,
+            height = 0.8,
+            border = "rounded",
+            backdrop = false,
+            keys = {
+                term_normal = false,
+                stopinsert = {
+                    "<esc>",
+                    function()
+                        vim.cmd.stopinsert()
+                    end,
+                    mode = "t",
+                    desc = "Normal mode",
+                },
+            },
+        },
+    })
+
+    -- Snacks re-attaches events registered with `on` every time the window is
+    -- shown again, so register once per terminal buffer.
+    if term and not vim.b[term.buf].hide_on_leave then
+        vim.b[term.buf].hide_on_leave = true
+        term:on("BufLeave", function()
+            term:hide()
+        end, { buf = true })
+    end
+end
+
 return {
     "folke/snacks.nvim",
     priority = 1000,
@@ -75,44 +115,16 @@ return {
         image = { enabled = true },
         bigfile = { enabled = true },
         quickfile = { enabled = true },
-        lazygit = {
-            -- automatically configure lazygit to use the current colorscheme
-            -- and integrate edit with the current neovim instance
-            configure = true,
-            -- extra configuration for lazygit that will be merged with the default
-            -- snacks does NOT have a full yaml parser, so if you need `"test"` to appear with the quotes
-            -- you need to double quote it: `"\"test\""`
-            config = {
-                os = { editPreset = "nvim-remote" },
-            },
-            theme_path = vim.fs.normalize(vim.fn.stdpath("cache") .. "/lazygit-theme.yml"),
-        },
         scratch = {
             win_by_ft = {
-                javascript = {
-                    keys = {
-                        ["source"] = {
-                            "<cr>",
-                            source_js_or_ts,
-                            desc = "Source buffer",
-                            mode = { "n", "x" },
-                        },
-                    },
-                },
-                typescript = {
-                    keys = {
-                        ["source"] = {
-                            "<cr>",
-                            source_js_or_ts,
-                            desc = "Source buffer",
-                            mode = { "n", "x" },
-                        },
-                    },
-                },
+                javascript = js_scratch_win,
+                typescript = js_scratch_win,
             },
         },
     },
     keys = {
+        { "<leader>`", toggle_terminal, desc = "Toggle floating terminal" },
+        { "<leader>§", toggle_terminal, desc = "Toggle floating terminal" },
         {
             "<leader>.",
             function()

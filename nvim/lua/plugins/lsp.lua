@@ -1,11 +1,3 @@
-local function setup_filetypes()
-    vim.filetype.add({
-        extension = {
-            pcss = "scss",
-        },
-    })
-end
-
 -- Shorter, nicer names for some diagnostic sources.
 local SPECIAL_SOURCES = {
     ["Lua Diagnostics."] = "lua",
@@ -48,17 +40,9 @@ local function setup_lsp_keymaps()
     local FzfLua = require("fzf-lua")
 
     local keymaps = {
-        {
-            keys = "gra",
-            callback = vim.lsp.buf.code_action,
-            desc = "Goto Code [A]ction",
-            mode = { "n", "x" },
-        },
         { keys = "gri", callback = FzfLua.lsp_implementations, desc = "Goto [I]mplementation" },
-        { keys = "grn", callback = vim.lsp.buf.rename, desc = "Re[n]ame" },
         { keys = "grr", callback = FzfLua.lsp_references, desc = "Goto [R]eferences" },
         { keys = "grt", callback = FzfLua.lsp_typedefs, desc = "Goto [T]ype Definition" },
-        { keys = "grx", callback = vim.lsp.codelens.run, desc = "Code Lens E[x]ecute" },
         { keys = "grd", callback = FzfLua.lsp_definitions, desc = "Goto [D]efinition" },
         { keys = "grD", callback = vim.lsp.buf.declaration, desc = "Goto [D]eclaration" },
         { keys = "gO", callback = FzfLua.lsp_document_symbols, desc = "Document Symbols" },
@@ -66,7 +50,7 @@ local function setup_lsp_keymaps()
     }
 
     for _, mapping in ipairs(keymaps) do
-        vim.keymap.set(mapping.mode or "n", mapping.keys, mapping.callback, {
+        vim.keymap.set("n", mapping.keys, mapping.callback, {
             desc = "LSP: " .. mapping.desc,
         })
     end
@@ -136,6 +120,11 @@ local function find_project_tsc(root_dir)
 end
 
 local function setup_servers()
+    -- Captured before our own config is merged in, so the override below can
+    -- chain to it (it forwards settings as initializationOptions and registers
+    -- the `rust-analyzer.runSingle` code-lens command).
+    local lspconfig_rust_before_init = vim.lsp.config.rust_analyzer.before_init
+
     local servers = {
         tsc = {
             cmd = function(dispatchers, config)
@@ -181,9 +170,6 @@ local function setup_servers()
             },
         },
         gopls = {
-            cmd = { "gopls" },
-            root_markers = { "go.mod" },
-            filetypes = { "go", "gomod" },
             settings = {
                 gopls = {
                     hints = {
@@ -199,10 +185,7 @@ local function setup_servers()
             },
         },
         rust_analyzer = {
-            cmd = { "rust-analyzer" },
-            filetypes = { "rust" },
-            root_markers = { "Cargo.toml", "rust-project.json", ".git" },
-            before_init = function(_, config)
+            before_init = function(init_params, config)
                 -- rust-analyzer only ever looks for a Cargo.toml or a
                 -- rust-project.json under the workspace root, and gives up with
                 -- "failed to find any projects" on a .rs file that belongs to
@@ -215,6 +198,10 @@ local function setup_servers()
                     local settings = config.settings["rust-analyzer"]
                     settings.linkedProjects = { vim.api.nvim_buf_get_name(0) }
                     settings.checkOnSave = false
+                end
+
+                if lspconfig_rust_before_init then
+                    lspconfig_rust_before_init(init_params, config)
                 end
             end,
             settings = {
@@ -233,10 +220,6 @@ local function setup_servers()
             },
         },
         lua_ls = {
-            -- Command and arguments to start the server.
-            cmd = { "lua-language-server" },
-            -- Filetypes to automatically attach to.
-            filetypes = { "lua" },
             -- Sets the "workspace" to the directory where any of these files is found.
             -- Files that share a root directory will reuse the LSP server connection.
             -- Nested lists indicate equal priority, see |vim.lsp.Config|.
@@ -259,18 +242,8 @@ local function setup_servers()
                 },
             },
         },
-        cssls = {
-            cmd = { "vscode-css-language-server", "--stdio" },
-            filetypes = { "css", "scss", "less" },
-            settings = {
-                css = { validate = true },
-                scss = { validate = true },
-                less = { validate = true },
-            },
-        },
+        cssls = {},
         jsonls = {
-            cmd = { "vscode-json-language-server", "--stdio" },
-            filetypes = { "json", "jsonc" },
             settings = {
                 json = {
                     validate = { enable = true },
@@ -319,7 +292,6 @@ return {
         { "b0o/schemastore.nvim", lazy = true },
     },
     config = function()
-        setup_filetypes()
         setup_diagnostics()
         setup_lsp_keymaps()
         setup_idle_shutdown()

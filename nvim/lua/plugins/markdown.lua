@@ -4,9 +4,9 @@ return {
     -- and LaTeX are handled separately by `snacks.image`.
     {
         "MeanderingProgrammer/render-markdown.nvim",
-        -- The treesitter config already installs the `markdown` parsers and starts
-        -- treesitter for the filetype; `mini.icons` is picked up as the icon provider.
-        dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-mini/mini.nvim" },
+        -- The treesitter config installs the `markdown` parsers and starts
+        -- treesitter for the filetype; `mini.icons` is picked up as the icon
+        -- provider. Both load at startup, so neither needs to be a dependency.
         ft = { "markdown" },
         ---@module 'render-markdown'
         ---@type render.md.UserConfig
@@ -26,7 +26,6 @@ return {
     -- the node- and deno-based previewers there is no runtime to install.
     {
         "brianhuster/live-preview.nvim",
-        dependencies = { "ibhagwan/fzf-lua" },
         cmd = "LivePreview",
         keys = {
             { "<leader>mp", "<cmd>LivePreview start<cr>", desc = "[P]review in browser" },

@@ -1,8 +1,6 @@
--- require("config.ui2").setup() -- INFO: Enable when it is more stable
 require("config.options")
 require("config.keymaps")
 require("config.autocmds")
-require("config.terminal")
 require("config.idle_buffers").setup()
 
 local mise_shims = vim.fn.expand("~/.local/share/mise/shims")

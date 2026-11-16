@@ -74,7 +74,6 @@ return { -- Collection of various small independent plugins/modules
 
         local mini_icons = require("mini.icons")
         mini_icons.setup({
-            style = vim.g.have_nerd_font and "glyph" or "ascii",
             lsp = {
                 error = { glyph = "", hl = "MiniIconsRed" },
                 warn = { glyph = "", hl = "MiniIconsYellow" },

@@ -9,7 +9,6 @@ return {
         library = {
             { path = "${3rd}/luv/library", words = { "vim%.uv" } },
             { path = "snacks.nvim", words = { "Snacks" } },
-            { path = "lazy.nvim", words = { "LazyVim" } },
             { path = "nvim-lspconfig", words = { "lspconfig.settings" } }, -- See the configuration section for more details
         },
     },

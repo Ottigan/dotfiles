@@ -28,21 +28,11 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     end,
 })
 
--- Disable line numbers in terminal
-vim.api.nvim_create_autocmd("TermOpen", {
-    group = group,
-    callback = function()
-        vim.opt_local.number = false
-        vim.opt_local.relativenumber = false
-        vim.opt_local.signcolumn = "no"
-    end,
-})
-
 -- Auto-resize splits when window is resized
 vim.api.nvim_create_autocmd("VimResized", {
     group = group,
     callback = function()
-        vim.cmd("tabdo wincmd =")
+        vim.cmd("wincmd =")
     end,
 })
 
@@ -107,17 +97,12 @@ vim.api.nvim_create_autocmd("User", {
 
             vim.g.last_known_branch = head
 
-            local buffers = require("config.buffers")
-
-            for _, bufnr in ipairs(buffers.list()) do
-                local bufname = vim.api.nvim_buf_get_name(bufnr)
-                local path = vim.fn.fnamemodify(bufname, ":p")
-
-                -- Delete buffer if it no longer exists on disk (e.g. due to git checkout)
-                if not path or not vim.uv.fs_stat(path) then
-                    buffers.delete(bufnr)
-                end
-            end
+            -- Delete listed file buffers whose file no longer exists on disk
+            -- (e.g. due to git checkout). Unnamed buffers are left alone.
+            Snacks.bufdelete(function(bufnr)
+                local name = vim.api.nvim_buf_get_name(bufnr)
+                return vim.bo[bufnr].buftype == "" and name ~= "" and not vim.uv.fs_stat(name)
+            end)
         end)
     end,
 })

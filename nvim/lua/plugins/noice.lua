@@ -1,7 +1,6 @@
--- Scroll an open LSP hover/signature window, otherwise fall back to the key.
--- These maps replace the centered `<C-u>zz`/`<C-d>zz` from config/keymaps/scrolling.lua,
--- so keep the centering here, but only in normal mode: in insert mode the keys
--- delete text and a trailing `zz` would be typed into the buffer.
+-- Scroll an open LSP hover/signature window, otherwise fall back to the key,
+-- centered in normal mode only: in insert mode the keys delete text and a
+-- trailing `zz` would be typed into the buffer.
 local function lsp_scroll_or(delta, key)
     if require("noice.lsp").scroll(delta) then
         return
@@ -26,55 +25,15 @@ return {
             },
             -- LSP Progress is handled by Lualine
             progress = { enabled = false },
-            hover = {
-                enabled = true,
-                silent = false, -- set to true to not show a message if hover is not available
-                view = nil, -- when nil, use defaults from documentation
-                ---@type NoiceViewOptions
-                opts = {}, -- merged with defaults from documentation
-            },
-            signature = {
-                enabled = true,
-                auto_open = {
-                    enabled = true,
-                    trigger = true, -- Automatically show signature help when typing a trigger character from the LSP
-                    throttle = 150, -- Debounce lsp signature help request by 150ms
-                },
-                view = nil, -- when nil, use defaults from documentation
-                ---@type NoiceViewOptions
-                opts = {}, -- merged with defaults from documentation
-            },
+            signature = { auto_open = { throttle = 150 } },
         },
-        -- You can add any custom commands below that will be available with `:Noice command`
         commands = {
-            history = {
-                -- options for the message history that you get with `:Noice`
-                view = "popup",
-                opts = { enter = true, format = "details" },
-                filter = {
-                    any = {
-                        { event = "notify" },
-                        { error = true },
-                        { warning = true },
-                        { event = "msg_show", kind = { "" } },
-                        { event = "lsp", kind = "message" },
-                    },
-                },
-            },
-            all = {
-                -- options bor the message history that you get with `:Noice`
-                view = "popup",
-                opts = { enter = true, format = "details" },
-                filter = {},
-            },
+            history = { view = "popup" },
+            all = { view = "popup" },
         },
-        -- you can enable a preset bor easier configuration
         presets = {
-            bottom_search = false, -- use a classic bottom cmdline bor search
-            command_palette = false, -- position the cmdline and popupmenu together
-            long_message_to_split = true, -- long messages will be sent to a split
-            inc_rename = false, -- enables an input dialog bor inc-rename.nvim
-            lsp_doc_border = true, -- add a border to hover docs and signature help
+            long_message_to_split = true,
+            lsp_doc_border = true,
         },
         views = {
             cmdline_popup = {

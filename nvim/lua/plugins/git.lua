@@ -84,45 +84,27 @@ return {
             { "<leader>cu", "<cmd>GitLink<cr>", mode = { "n", "v" }, desc = "Copy upstream URL" },
             { "<leader>ou", "<cmd>GitLink!<cr>", mode = { "n", "v" }, desc = "Open upstream URL" },
         },
-        opts = {
-            router = {
-                browse = {
-                    ["^gitlab%.evolution%.com"] = "https://gitlab.evolution.com/"
-                        .. "{_A.ORG}/"
-                        .. "{_A.REPO}/blob/"
-                        .. "{_A.REV}/"
-                        .. "{_A.FILE}"
-                        .. "#L{_A.LSTART}"
-                        .. "{(_A.LEND > _A.LSTART and ('-L' .. _A.LEND) or '')}",
+        opts = function()
+            -- `kind` is the GitLab view (blob/blame), `rev` the gitlinker field
+            -- holding the revision to link to.
+            local function gitlab(kind, rev)
+                return {
+                    ["^gitlab%.evolution%.com"] = "https://gitlab.evolution.com/{_A.ORG}/{_A.REPO}/"
+                        .. kind
+                        .. "/{_A."
+                        .. rev
+                        .. "}/{_A.FILE}#L{_A.LSTART}{(_A.LEND > _A.LSTART and ('-L' .. _A.LEND) or '')}",
+                }
+            end
+
+            return {
+                router = {
+                    browse = gitlab("blob", "REV"),
+                    blame = gitlab("blame", "REV"),
+                    default_branch = gitlab("blob", "DEFAULT_BRANCH"),
+                    current_branch = gitlab("blob", "CURRENT_BRANCH"),
                 },
-                blame = {
-                    ["^gitlab%.evolution%.com"] = "https://gitlab.evolution.com/"
-                        .. "{_A.ORG}/"
-                        .. "{_A.REPO}/blame/"
-                        .. "{_A.REV}/"
-                        .. "{_A.FILE}"
-                        .. "#L{_A.LSTART}"
-                        .. "{(_A.LEND > _A.LSTART and ('-L' .. _A.LEND) or '')}",
-                },
-                default_branch = {
-                    ["^gitlab%.evolution%.com"] = "https://gitlab.evolution.com/"
-                        .. "{_A.ORG}/"
-                        .. "{_A.REPO}/blob/"
-                        .. "{_A.DEFAULT_BRANCH}/"
-                        .. "{_A.FILE}"
-                        .. "#L{_A.LSTART}"
-                        .. "{(_A.LEND > _A.LSTART and ('-L' .. _A.LEND) or '')}",
-                },
-                current_branch = {
-                    ["^gitlab%.evolution%.com"] = "https://gitlab.evolution.com/"
-                        .. "{_A.ORG}/"
-                        .. "{_A.REPO}/blob/"
-                        .. "{_A.CURRENT_BRANCH}/"
-                        .. "{_A.FILE}"
-                        .. "#L{_A.LSTART}"
-                        .. "{(_A.LEND > _A.LSTART and ('-L' .. _A.LEND) or '')}",
-                },
-            },
-        },
+            }
+        end,
     },
 }
