@@ -245,7 +245,27 @@ local function setup_servers()
                 },
             },
         },
-        cssls = {},
+        cssls = {
+            -- .pcss has the scss filetype, but cssls's SCSS parser rejects
+            -- PostCSS-only syntax such as `@media $mqPhone` (SCSS needs
+            -- `#{$mqPhone}`), so drop its diagnostics for .pcss files while
+            -- keeping completion/hover. Pull and push variants are both covered.
+            handlers = {
+                ["textDocument/diagnostic"] = function(err, result, ctx)
+                    local uri = ctx.params and ctx.params.textDocument.uri or ""
+                    if result and uri:match("%.pcss$") then
+                        result.items = {}
+                    end
+                    return vim.lsp.diagnostic.on_diagnostic(err, result, ctx)
+                end,
+                ["textDocument/publishDiagnostics"] = function(err, result, ctx)
+                    if result and result.uri:match("%.pcss$") then
+                        result.diagnostics = {}
+                    end
+                    return vim.lsp.diagnostic.on_publish_diagnostics(err, result, ctx)
+                end,
+            },
+        },
         jsonls = {
             settings = {
                 json = {
