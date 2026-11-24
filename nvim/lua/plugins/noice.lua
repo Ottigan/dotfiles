@@ -27,6 +27,12 @@ return {
             progress = { enabled = false },
             signature = { auto_open = { throttle = 150 } },
         },
+        cmdline = {
+            format = {
+                -- `:!cmd` runs a shell command; the default title is " Filter "
+                filter = { title = " Shell " },
+            },
+        },
         commands = {
             history = { view = "popup" },
             all = { view = "popup" },

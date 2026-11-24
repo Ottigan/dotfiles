@@ -1,0 +1,28 @@
+#!/bin/sh
+# Render js-clients.template into ../sessions/<package>.kitty-session, one per package.
+# Rerun after editing the template or the package list. Worktrees are created by hand:
+#   git -C ~/Documents/js-clients worktree add --detach ~/Documents/js-clients.worktrees/<package> origin/develop
+set -eu
+
+WORKTREES='~/Documents/js-clients.worktrees'
+PACKAGES_DIR='packages/games-evo'
+PACKAGES='
+  evo-andar-bahar
+  evo-ls3
+  evo-stockmarket
+  evo-favorite
+  evo-red-baron
+  evo-filthyrich
+'
+
+cd "$(dirname "$0")"
+
+for name in $PACKAGES; do
+  out="../sessions/$name.kitty-session"
+  sed -e '/^##/d' \
+    -e "s|@NAME@|$name|g" \
+    -e "s|@ROOT@|$WORKTREES/$name|g" \
+    -e "s|@PKG@|$PACKAGES_DIR/$name|g" \
+    js-clients.template >"$out"
+  echo "wrote ${out#../}"
+done
