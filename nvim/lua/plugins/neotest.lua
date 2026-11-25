@@ -13,11 +13,13 @@ local jest_commands = {
 
 -- Nearest of `names` from the directory of `path` up to and including the cwd
 -- (`stop` itself is never searched, hence its parent).
+-- neotest calls this from a nio task (a fast event context), where Vimscript
+-- functions such as `vim.fn.getcwd()` are forbidden, so read the cwd via libuv.
 local function find_upward(names, path)
     return vim.fs.find(names, {
         upward = true,
         path = vim.fs.dirname(path),
-        stop = vim.fs.dirname(vim.fn.getcwd()),
+        stop = vim.fs.dirname(vim.uv.cwd()),
     })[1]
 end
 
@@ -99,7 +101,7 @@ return {
 
         --- @diagnostic disable: duplicate-set-field
         js_clients_jest.root = function()
-            return vim.fn.getcwd()
+            return vim.uv.cwd()
         end
 
         ---@diagnostic disable: missing-fields

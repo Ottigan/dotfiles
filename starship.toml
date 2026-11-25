@@ -7,8 +7,10 @@ add_newline = false
 # Timeout for starship to scan files (in milliseconds).
 scan_timeout = 30
 
-# Timeout for commands executed by starship (in milliseconds).
-command_timeout = 1000
+# Timeout for commands executed by starship (in milliseconds). In js-clients (~120k files) the
+# first `git status` after git's untracked cache is reset scans ~40k directories and takes
+# 1-4.5s; it must finish once to rebuild the cache, after which it takes ~0.25s.
+command_timeout = 5000
 
 # Prompt
 format = """
